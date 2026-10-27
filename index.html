@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; connect-src 'self' blob: data:; img-src 'self' blob: data:; style-src 'self'; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <title>Tá Seguro? — Isso é golpe?</title>
+  <meta name="description" content="Recebeu uma mensagem ou ligação estranha? Conte aqui e descubra se parece golpe. Feito para quem tem pouca intimidade com o celular. Funciona sem internet e nada sai do seu aparelho.">
+  <meta name="theme-color" content="#fbf8f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#12161c" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-title" content="Tá Seguro?">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icone.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icones/apple-touch-icon.png">
+  <link rel="preload" href="fontes/atkinson-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fontes/atkinson-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <a class="pular" href="#mensagem">Pular para a caixa de mensagem</a>
+
+  <header class="topo">
+    <div class="marca">
+      <svg class="marca-icone" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 4 7v8c0 7.4 5.1 13.6 12 15 6.9-1.4 12-7.6 12-15V7L16 2z" fill="currentColor"/><path class="marca-check" d="m10.5 16.2 3.8 3.8 7.4-7.6" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Tá Seguro?</span>
+    </div>
+    <div class="tamanho" role="group" aria-label="Tamanho da letra">
+      <button type="button" id="letra-menor" aria-label="Diminuir letra">A−</button>
+      <button type="button" id="letra-maior" aria-label="Aumentar letra">A+</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="inicio" aria-labelledby="titulo-inicio">
+      <h1 id="titulo-inicio">Recebeu uma mensagem ou ligação estranha?</h1>
+      <p class="sub">Cole a mensagem ou conte o que disseram. Eu te digo se parece golpe.</p>
+
+      <form id="form" class="cartao" novalidate>
+        <label for="mensagem" class="rotulo">Mensagem ou o que disseram na ligação</label>
+        <textarea id="mensagem" rows="6" placeholder="Cole aqui a mensagem ou escreva o que disseram na ligação" autocomplete="off" spellcheck="false" aria-describedby="aviso-entrada"></textarea>
+
+        <div class="acoes-entrada">
+          <button type="button" id="colar" class="botao secundario">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4h6v3H9z" fill="currentColor"/></svg>
+            Colar mensagem
+          </button>
+          <button type="button" id="botao-print" class="botao secundario">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="currentColor"/><path d="m4 18 5-5 4 4 3-3 4 4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            Usar foto da tela (print)
+          </button>
+          <input type="file" id="print" accept="image/*" hidden tabindex="-1">
+        </div>
+
+        <p id="aviso-entrada" class="aviso-entrada" role="status" aria-live="polite"></p>
+        <progress id="progresso-ocr" class="progresso" max="100" value="0" hidden aria-hidden="true"></progress>
+
+        <details class="ajuda">
+          <summary>Como copiar a mensagem do WhatsApp?</summary>
+          <ol>
+            <li>No WhatsApp, <strong>toque e segure</strong> em cima da mensagem.</li>
+            <li>Toque em <strong>Copiar</strong>. Se não aparecer, procure nos 3 pontinhos lá em cima.</li>
+            <li>Volte aqui e toque em <strong>Colar mensagem</strong>.</li>
+          </ol>
+          <p>Não deu certo? Tire um print da tela e toque em <strong>Usar foto da tela</strong>.</p>
+        </details>
+
+        <button type="submit" class="botao principal" id="verificar">Verificar mensagem</button>
+        <p class="privacidade">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          Sua mensagem não sai do seu celular.
+        </p>
+      </form>
+    </section>
+
+    <section id="resultado" class="resultado" hidden aria-labelledby="veredito-titulo">
+      <div id="veredito" class="veredito">
+        <div class="veredito-cabeca">
+          <div class="veredito-icone" aria-hidden="true"></div>
+          <div>
+            <h2 id="veredito-titulo" tabindex="-1"></h2>
+            <p id="veredito-resumo"></p>
+          </div>
+        </div>
+        <button type="button" id="ouvir" class="botao neutro" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Ouvir a resposta</span>
+        </button>
+      </div>
+
+      <div class="analisado">
+        <p class="analisado-rotulo">Mensagem verificada:</p>
+        <p id="trecho" class="trecho"></p>
+        <p id="aviso-exemplo" class="nota-forte" hidden>Isto é um exemplo, não a sua mensagem.</p>
+        <p id="aviso-truncado" class="nota" hidden>A mensagem é muito longa. Verifiquei só o começo dela.</p>
+        <p id="aviso-print" class="nota" hidden>Li este texto de uma foto da tela. A leitura pode ter erros: confira na caixa lá em cima.</p>
+      </div>
+
+      <div class="cartao">
+        <h3>O que fazer agora</h3>
+        <ol id="o-que-fazer" class="lista-passos"></ol>
+        <a id="ligar-190" class="botao perigo largo" href="tel:190" hidden>Ligar para a polícia (190)</a>
+      </div>
+
+      <div class="cartao">
+        <h3>Na dúvida, pergunte a alguém</h3>
+        <div class="acoes-contato">
+          <a id="ligar-contato" class="botao principal" hidden></a>
+          <a id="whats-contato" class="botao whatsapp" target="_blank" rel="noopener noreferrer" hidden></a>
+          <a id="avisar" class="botao whatsapp" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 8.5c.3 2.7 2.8 5.5 6 6.3l1.2-1.3-1.8-1-.9.8c-1.1-.5-2-1.4-2.5-2.5l.8-.9-1-1.8L9 8.5z" fill="currentColor"/></svg>
+            Pedir ajuda no WhatsApp
+          </a>
+          <button type="button" id="cadastrar-contato" class="botao secundario">Cadastrar pessoa de confiança</button>
+        </div>
+      </div>
+
+      <div id="bloco-motivos" class="cartao">
+        <h3>Por que eu acho isso</h3>
+        <ul id="motivos" class="lista-motivos"></ul>
+      </div>
+
+      <div id="bloco-links" class="cartao" hidden>
+        <h3>Links na mensagem</h3>
+        <ul id="links" class="lista-links"></ul>
+      </div>
+
+      <div class="acoes-final">
+        <button type="button" id="ja-cai" class="botao secundario largo">Já fiz o Pix ou passei o código</button>
+        <button type="button" id="outra" class="botao principal largo">Verificar outra mensagem</button>
+      </div>
+    </section>
+
+    <details id="socorro" class="cartao socorro">
+      <summary>Já caí no golpe. E agora?</summary>
+      <p class="socorro-calma">Calma. Você não tem culpa. Siga os passos do que aconteceu com você.</p>
+      <div id="socorro-contato" class="acoes-contato"></div>
+
+      <h3>Fiz um Pix ou passei dados do cartão</h3>
+      <ol>
+        <li><strong>Ligue agora para o seu banco</strong>, no número que está atrás do cartão. Peça para bloquear a conta e o cartão.</li>
+        <li>Se fez Pix, <strong>peça a devolução pelo MED</strong> (Mecanismo Especial de Devolução). Faça isso hoje: quanto antes, mais chance de recuperar.</li>
+        <li><strong>Faça um boletim de ocorrência</strong> na delegacia online do seu estado. É de graça. Guarde os prints da conversa e o comprovante.</li>
+      </ol>
+
+      <h3>Passei o código do WhatsApp</h3>
+      <ol>
+        <li><strong>Entre de novo no WhatsApp com o seu número.</strong> Se precisar, apague o aplicativo e instale de novo. Vai chegar um código novo por SMS: digite ele. Isso tira o golpista da sua conta.</li>
+        <li><strong>Avise seus contatos</strong>, por ligação ou por outra pessoa, para não mandarem dinheiro pedido em seu nome.</li>
+        <li>Não conseguiu entrar? Peça ajuda a alguém da família.</li>
+        <li>Depois de entrar, ative a confirmação em duas etapas (Configurações, depois Conta).</li>
+      </ol>
+
+      <h3>Passei a senha ou instalei um aplicativo que pediram</h3>
+      <ol>
+        <li><strong>Desligue a internet do celular</strong> (Wi-Fi e dados móveis). As ligações continuam funcionando.</li>
+        <li><strong>Ligue para o seu banco</strong>, no número atrás do cartão, e peça para bloquear tudo.</li>
+        <li><strong>Apague o aplicativo</strong> que mandaram instalar. Se não souber como, peça ajuda antes de ligar a internet de novo.</li>
+        <li>Troque a senha do banco, com ajuda de alguém de confiança.</li>
+      </ol>
+
+      <h3>Como bloquear e denunciar no WhatsApp</h3>
+      <ol>
+        <li>Abra a conversa com quem mandou a mensagem.</li>
+        <li>Toque no nome ou no número, lá em cima.</li>
+        <li>Desça até o fim e toque em <strong>Denunciar</strong>. Isso também bloqueia a pessoa.</li>
+      </ol>
+      <p>Se chegou por SMS, não responda. Só apague.</p>
+    </details>
+
+    <div id="instalar" class="cartao instalar" hidden>
+      <p><strong>Coloque o Tá Seguro? na tela do celular.</strong> Assim fica fácil de achar, e funciona até sem internet.</p>
+      <button type="button" id="botao-instalar" class="botao principal" hidden>Instalar o app</button>
+      <p id="instalar-ios" hidden>No iPhone: toque em <strong>Compartilhar</strong> (o quadrado com uma seta) e depois em <strong>Adicionar à Tela de Início</strong>.</p>
+      <button type="button" id="instalar-depois" class="botao-texto">Agora não</button>
+    </div>
+
+    <section class="exemplos" aria-labelledby="titulo-exemplos">
+      <h2 id="titulo-exemplos">Quer ver como funciona? Teste um exemplo:</h2>
+      <div class="lista-exemplos" id="exemplos"></div>
+    </section>
+
+    <section class="cartao regras" aria-labelledby="titulo-regras">
+      <h2 id="titulo-regras">5 regras para não cair em golpe</h2>
+      <ol>
+        <li><strong>Senha e código são só seus.</strong> Banco, INSS e polícia nunca pedem, nem mandam instalar aplicativo.</li>
+        <li><strong>Pediu dinheiro? Ligue antes</strong> para o número antigo que você já tinha da pessoa.</li>
+        <li><strong>Pressa é sinal de golpe.</strong> Quem é de verdade espera você confirmar.</li>
+        <li><strong>Não toque em link</strong> de prêmio, taxa, multa ou "conta bloqueada".</li>
+        <li><strong>Ligação estranha? Desligue.</strong> Depois ligue você mesmo para um número que já conhece, como o do cartão.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p><button type="button" id="rodape-contato" class="botao-texto">Pessoa de confiança: cadastrar ou trocar</button></p>
+    <p>Tá Seguro? é gratuito e de código aberto. Ele ajuda, mas não substitui o seu cuidado: na dúvida, ligue para quem você confia.</p>
+    <p><a href="https://github.com/BAZZUKA-ROOT/ta-seguro">Ver o código no GitHub</a> · feito por BAZZUKA-ROOT</p>
+  </footer>
+
+  <dialog id="dialogo-contato" aria-labelledby="titulo-contato">
+    <form id="form-contato" novalidate>
+      <h2 id="titulo-contato">Pessoa de confiança</h2>
+      <p class="nota">Quem você chama quando tem dúvida. Fica guardado só neste celular.</p>
+      <label for="contato-nome" class="rotulo">Nome</label>
+      <input id="contato-nome" type="text" autocomplete="off" maxlength="40" placeholder="Por exemplo: Ana (filha)">
+      <label for="contato-telefone" class="rotulo">Celular com DDD</label>
+      <input id="contato-telefone" type="tel" inputmode="tel" autocomplete="off" maxlength="20" placeholder="(11) 98765-4321" aria-describedby="contato-erro">
+      <p id="contato-erro" class="erro" role="alert"></p>
+      <div class="acoes-dialogo">
+        <button type="submit" class="botao principal">Salvar</button>
+        <button type="button" id="contato-cancelar" class="botao secundario">Cancelar</button>
+        <button type="button" id="contato-apagar" class="botao-texto" hidden>Apagar pessoa de confiança</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

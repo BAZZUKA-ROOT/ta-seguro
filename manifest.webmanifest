@@ -1,0 +1,59 @@
+{
+  "id": "./",
+  "name": "Tá Seguro? — Isso é golpe?",
+  "short_name": "Tá Seguro?",
+  "description": "Cole ou compartilhe uma mensagem e descubra se é golpe. Sua mensagem não sai do seu celular.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbf8f3",
+  "theme_color": "#1E4FA8",
+  "categories": ["utilities", "security"],
+  "icons": [
+    { "src": "icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icones/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "share_target": {
+    "action": "./compartilhar",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "imagem",
+          "accept": ["image/*", "image/jpeg", "image/png", "image/webp", ".jpg", ".jpeg", ".png", ".webp"]
+        }
+      ]
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Colar uma mensagem",
+      "short_name": "Colar mensagem",
+      "description": "Colar uma mensagem copiada para verificar",
+      "url": "./?acao=colar",
+      "icons": [{ "src": "icones/atalho-colar-96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Verificar um print",
+      "short_name": "Ler um print",
+      "description": "Escolher um print da galeria para verificar",
+      "url": "./?acao=print",
+      "icons": [{ "src": "icones/atalho-print-96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Já caí no golpe — socorro",
+      "short_name": "Já caí no golpe",
+      "description": "O que fazer agora se você já caiu num golpe",
+      "url": "./?acao=socorro",
+      "icons": [{ "src": "icones/atalho-socorro-96.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ]
+}

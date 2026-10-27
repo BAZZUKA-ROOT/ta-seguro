@@ -1,0 +1,19 @@
+Leitor de prints (OCR) usado pelo Tá Seguro? — cópia local, sem CDN.
+
+Arquivo                                   Origem (npm pack, integridade conferida pelo npm)          Licença
+tesseract.min.js, worker.min.js           tesseract.js@5.1.1 (dist/)                                  Apache-2.0 (LICENSE-tesseract.js.txt)
+core/tesseract-core-simd-lstm.wasm.js     tesseract.js-core@5.1.1                                     Apache-2.0 (core/LICENSE-tesseract.js-core.txt)
+core/tesseract-core-lstm.wasm.js          tesseract.js-core@5.1.1 (aparelhos sem WebAssembly SIMD)    Apache-2.0
+lang/por.traineddata.gz                   @tesseract.js-data/por@1.0.0, pasta 4.0.0_best_int          Apache-2.0 (tessdata do Tesseract OCR)
+
+O motor Tesseract OCR (dentro do core) é do projeto tesseract-ocr, licença Apache-2.0.
+Avisos de terceiros embutidos nos .min.js: tesseract.min.js.LICENSE.txt, worker.min.js.LICENSE.txt.
+
+SHA-256
+a8e29918d098b2b06e1012bdaeffb4aec0445c5d5654709023e0bd1f442a80e8  tesseract.min.js
+aca1229639fc9907d86f96e825955a2b7c5716d17f3bc3acd71f9c7ab66181fc  worker.min.js
+8f04aa0cc81e7bde33f80e92fa01a7a665f0b4884d098acf5de9c7104a11dfaa  core/tesseract-core-lstm.wasm.js
+ce20eda9533cbed1e6c2b4276fbae1e0adc61b6754b5513084be601787b457cf  core/tesseract-core-simd-lstm.wasm.js
+dacebc1386ddaaf8389f81094236cca0d690897cde693d48cbdaa881c86e2b4c  lang/por.traineddata.gz
+
+Ao trocar a versão: substitua os arquivos e mude TESSERACT em sw.js (isso troca o cache do leitor).
